@@ -1,0 +1,19 @@
+---
+- hosts: all
+  roles:
+  - role: auth
+
+  tasks: 
+    - name: create container
+      command: 'curl -s -k --cert mylxd.crt --key mylxd.key {{ LXD_HOST }}/1.0/containers -X POST -d ''{"name": "{{ CONTAINER }}","architecture": "x86_64","profiles": ["default"],"persistent": true,"source": {"alias": "{{ VERSION }}","protocol": "simplestreams","server": "https://cloud-images.ubuntu.com/releases","type": "image"}}'''
+      register: show_container
+
+    - debug:
+        msg: "{{  show_container.stdout }}"
+
+    - name: start container
+      command: 'curl -s -k --cert mylxd.crt --key mylxd.key {{ LXD_HOST }}/1.0/containers/{{ CONTAINER }}/state  -X PUT -d ''{"action": "start"}'''
+      register: show_container
+
+    - debug:
+        msg: "{{  show_container.stdout }}"

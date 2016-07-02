@@ -1,0 +1,12 @@
+- include_vars: secrets.yml
+
+- name: create self-signed SSL cert
+  shell: openssl req -new -nodes -x509 -subj "/C=DE/ST=Berlin/L=Berlin/O=LXD/CN=mylxd" -days 3650 -keyout mylxd.key -out mylxd.crt -extensions v3_ca creates=mylxd.crt
+
+- name: check auth
+  command: 'curl -s -k --cert mylxd.crt --key mylxd.key  {{ LXD_HOST }}/1.0'
+  register: authtoken
+
+- name: request auth
+  command: 'curl -s -k --cert mylxd.crt --key mylxd.key {{ LXD_HOST }}/1.0/certificates -X POST -d ''{"type": "client", "password": "{{ LXD_PASS }}"}'''
+  when: authtoken.stdout.find('untrusted') != -1

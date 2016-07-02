@@ -1,0 +1,12 @@
+---
+- hosts: all
+  roles:
+  - role: auth
+
+  tasks: 
+    - name: show container
+      command: 'curl -s -k --cert mylxd.crt --key mylxd.key {{ LXD_HOST }}/1.0/containers/{{ CONTAINER }}'
+      register: show_container
+
+    - debug:
+        msg: "{{  show_container.stdout }}"

@@ -1,0 +1,12 @@
+---
+- hosts: all
+  roles:
+  - role: auth
+
+  tasks: 
+    - name: show operation events
+      command: 'curl -s -k --cert mylxd.crt --key mylxd.key {{ LXD_HOST }}/1.0/events?type=operation'
+      register: show_operation
+
+    - debug:
+        msg: "{{  show_operation.stdout }}"
